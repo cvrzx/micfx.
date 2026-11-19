@@ -1,23 +1,21 @@
-name: Build MicFX dylib
-
+name: Build MicFX v4
 on:
   workflow_dispatch:
   push:
-
+permissions:
+  contents: read
 jobs:
   build:
-    runs-on: macos-15
+    runs-on: macos-15-intel
     steps:
       - uses: actions/checkout@v4
-
-      - name: Build MicFX
-        run: |
+      - run: |
           mkdir -p native
-          cp MicFX.c pitch.h build.sh native/
+          cp MicFX.c pitch.h MusicInput.h BridgePacket.h build.sh native/
           bash native/build.sh
-
+          xcrun lipo MicFX.dylib -verify_arch arm64
       - uses: actions/upload-artifact@v4
         with:
-          name: MicFX-dylib
+          name: MicFX-dylib-v4
           path: MicFX.dylib
           if-no-files-found: error
